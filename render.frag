@@ -42,7 +42,7 @@ Sphere spheres[] = {{vec3(-7.0, 10.0, -7.0), 3.0, {vec3(0.85, 0.85, 0.85), 0.0, 
 
 Box boxes[] = {{vec3(-8.0, 5.0, -10.0), vec3(10.0, 7.0, 4.0), {vec3(0.9, 0.2, 0.4), 1.0, false, false, 1.0}}};
 
-Plane planes[] = {{vec3(0.0, 0.0, 1.0), -10.0, {vec3(0.3, 0.9, 0.2), 1.0, false, false, 1.0}}};
+Plane planes[] = {{vec3(0.0, 0.0, 1.0), -10.0, {vec3(0.25, 0.75, 0.15), 1.0, false, false, 1.0}}};
 
 uniform vec2 u_resolution;
 uniform vec3 u_position;
@@ -72,7 +72,7 @@ mat2 rot(float angle) {
 }
 
 vec3 skyColor(vec3 rd) {
-    vec3 color = vec3(0.35, 0.65, 0.95);
+    vec3 color = vec3(0.2, 0.4, 0.7);
     color += max(0.0, pow(dot(normalize(vec3(0, 2, 1)), rd), 128.0));
     return clamp(color, 0.0, 1.0);
 }
