@@ -62,7 +62,7 @@ vec3 randvec(float seed) {
     float h1 = hash(seed, seed);
     float h2 = hash(h1, seed);
     float h3 = hash(h2, seed);
-    return vec3(h1,h2,h3);
+    return normalize(vec3(h1,h2,h3));
 }
 
 mat2 rot(float angle) {
@@ -188,7 +188,7 @@ vec3 castRay(vec3 ro, vec3 rd, float sampleNumber) {
             rd = rd - 2*object.normal*dot(rd, object.normal);
             vec3 rand_dir = randvec(hash(u_frames*u_rand*ro.x*ro.z*rd.y*gl_FragCoord.x, sampleNumber*u_rand*rd.x*rd.z*ro.y*gl_FragCoord.y));
             rand_dir = normalize(rand_dir * dot(rand_dir, object.normal));
-            rd = mix(rd, rand_dir, object.material.diffuse);
+            rd = normalize(mix(rd, rand_dir, object.material.diffuse));
         }
     }
 
