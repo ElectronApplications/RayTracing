@@ -2,7 +2,13 @@
 
 #define M_PI 3.1415926535897932384626433832795
 #define REFLECTIONS 32
-#define PATH_SAMPLES 4
+#define PATH_SAMPLES 16
+
+#define DOF 1
+#if DOF
+    #define FOCAL_LENGTH 15.0
+    #define APERTURE_SIZE 0.05
+#endif
 
 struct Material {
     vec3 color;
@@ -188,7 +194,7 @@ vec3 castRay(vec3 ro, vec3 rd, float sampleNumber) {
             rd = rd - 2*object.normal*dot(rd, object.normal);
             vec3 rand_dir = randvec(hash(u_frames*u_rand*ro.x*ro.z*rd.y*gl_FragCoord.x, sampleNumber*u_rand*rd.x*rd.z*ro.y*gl_FragCoord.y));
             rand_dir = normalize(rand_dir * dot(rand_dir, object.normal));
-            rd = normalize(mix(rd, rand_dir, object.material.diffuse));
+            rd = normalize(mix(rd, object.normal + rand_dir, object.material.diffuse));
         }
     }
 
@@ -204,8 +210,18 @@ void main() {
     rd.xy *= rot(u_direction.x);
 
     vec3 color;
-    for(int i = 0; i < PATH_SAMPLES; i++)
-        color += castRay(u_position, rd, i);
+    for(int i = 0; i < PATH_SAMPLES; i++) {
+        vec3 ro = u_position;
+        vec3 cur_rd = rd;
+        #if DOF
+            vec3 focal = rd*FOCAL_LENGTH + u_position;
+            vec3 rand_offset = randvec(hash(u_frames*u_rand*ro.x*ro.z*rd.y*gl_FragCoord.x, i*u_rand*rd.x*rd.z*ro.y*gl_FragCoord.y));
+            rand_offset *= APERTURE_SIZE;
+            ro += rand_offset;
+            cur_rd = normalize(focal - ro);
+        #endif
+        color += castRay(ro, cur_rd, i);
+    }
     color /= PATH_SAMPLES;
     color = clamp(color, 0.0, 1.0);
 
